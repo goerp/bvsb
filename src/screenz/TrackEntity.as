@@ -3,8 +3,10 @@ package screenz
 	import entities.BerenburgEntity;
 	import entities.BoerEntity;
 	import entities.Entity;
+	import entities.LakeEntity;
 	import entities.Layer;
 	import entities.MudEntity;
+	import entities.OnionEntity;
 	import entities.StorkEntity;
 	import entities.SunEntity;
 	import flash.display.MovieClip;
@@ -28,6 +30,10 @@ package screenz
 		public var rectangle:Rectangle;
 		
 		public static const NR_BURPS:int = 5;
+		public static const NR_FARTS:int = 5;
+		public static const MAX_BURP_DURATION:int = 500;
+		public static const MAX_FART_DURATION:int = 500;
+		public static const LAKE_DURATION:int = 60;
 		
 		public function TrackEntity(nr:int) 
 		{
@@ -107,16 +113,40 @@ package screenz
 				drawn = nr == 1?e.drawn1:e.drawn2;
 				mc = nr == 1?e.movieClip1:e.movieClip2;
 				
-				if (e is MudEntity && drawn) {
-					if (boer.movieClip1.hitTestObject(mc)) {
-						boer.effects[BoerEntity.MUD_EFFECT].active = true;
-					}else {
-						boer.effects[BoerEntity.MUD_EFFECT].active = false;
-					}
-				}else if (e is BerenburgEntity && drawn) {
-					if (boer.movieClip1.hitTestObject(mc)) {
-						boer.effects[BoerEntity.BERENBURG_EFFECT].active = true;
-						boer.effects[BoerEntity.BERENBURG_EFFECT].count += NR_BURPS;
+				if(boer.onFloor){
+					if (e is MudEntity && drawn) {
+						if (boer.movieClip1.hitTestObject(mc)) {
+							boer.effects[BoerEntity.MUD_EFFECT].active = true;
+							Boer(boer.movieClip1).effectClip.gotoAndPlay("slip");
+							Boer(boer.movieClip2).effectClip.gotoAndPlay("slip");
+						}else {
+							boer.effects[BoerEntity.MUD_EFFECT].active = false;
+							Boer(boer.movieClip1).effectClip.gotoAndStop(0);
+						}
+					}else if (drawn && e is BerenburgEntity && !e.alreadyHit) {
+						if (boer.movieClip1.hitTestObject(mc.hitbox)) {
+							boer.effects[BoerEntity.BERENBURG_EFFECT].active = true;
+							boer.effects[BoerEntity.BERENBURG_EFFECT].count += NR_BURPS;
+							boer.effects[BoerEntity.BERENBURG_EFFECT].duration = MAX_BURP_DURATION;
+							e.alreadyHit = true;
+						}
+					}else if (drawn && e is OnionEntity && !e.alreadyHit) {
+						if (boer.movieClip1.hitTestObject(mc.hitbox)) {
+							boer.effects[BoerEntity.ONION_EFFECT].active = true;
+							boer.effects[BoerEntity.ONION_EFFECT].count += NR_FARTS;
+							boer.effects[BoerEntity.ONION_EFFECT].duration = MAX_FART_DURATION;
+							e.alreadyHit = true;
+						}
+					}else if (drawn && e is LakeEntity ) {
+						if (boer.movieClip1.hitTestObject(mc.hitbox) && !boer.effects[BoerEntity.LAKE_EFFECT].active ) {
+							boer.onFloor = false;
+							boer.effects[BoerEntity.LAKE_EFFECT].active = true;
+							boer.effects[BoerEntity.LAKE_EFFECT].duration = LAKE_DURATION;
+							boer.effects[BoerEntity.LAKE_EFFECT].entity= e;
+							Boer(boer.movieClip1).effectClip.gotoAndPlay("splash");
+							Boer(boer.movieClip1).gotoAndStop("goneunder");
+							e.alreadyHit = true;
+						}
 					}
 				}
 

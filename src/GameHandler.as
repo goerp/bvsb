@@ -29,13 +29,14 @@ package
 		public static const MAX_MEDIAN_SPEED:Number = 4;
 		public static const JUMP_SPEED:Number = -15;
 		
-		public var bonusMaxSpeedBauke:Number = 0
-		public var bonusMaxSpeedBaukje:Number = 0
+		public static var bonusMaxSpeedBauke:Number = 0
+		public static var bonusMaxSpeedBaukje:Number = 0
 	
 		public static var track1Rect:Rectangle;
 		public static var track2Rect:Rectangle;
 		
 		private var prevTime:Number =-1;
+		private var eor1:int = 0;
 		
 		public function GameHandler(gameScreen:GameScreen) 
 		{
@@ -77,15 +78,26 @@ package
 			if (topTrack.boer.onFloor){ 
 				baukeSpeed += 0.015;
 			}
-			if (baukeSpeed > MAX_MEDIAN_SPEED + bonusMaxSpeedBauke) baukeSpeed = MAX_MEDIAN_SPEED + bonusMaxSpeedBauke;
+			if (baukeSpeed > MAX_MEDIAN_SPEED + bonusMaxSpeedBauke) {
+				baukeSpeed -=0.1;
+			}
 			
 			if (bottomTrack.boer.onFloor) {
 				baukjeSpeed += 0.015;
 			}
-			if (baukjeSpeed > MAX_MEDIAN_SPEED + bonusMaxSpeedBaukje) baukjeSpeed = MAX_MEDIAN_SPEED + bonusMaxSpeedBaukje;
+			if (baukjeSpeed > MAX_MEDIAN_SPEED + bonusMaxSpeedBaukje) {
+				baukjeSpeed -= 0.1;
+			}
 			//trace(deltaT+ ","+ factor);
-			topTrack.update(baukeSpeed,track);
-			bottomTrack.update(baukjeSpeed,track);
+			eor1 = eor1 ^ 1;
+			if(eor1==1){
+				topTrack.update(baukeSpeed,track);
+				bottomTrack.update(baukjeSpeed, track);
+			}else{
+				bottomTrack.update(baukjeSpeed, track);
+				topTrack.update(baukeSpeed,track);
+			}
+			
 			gameScreen.progressBar.bauke.x = gameScreen.progressBar.width * topTrack.boer.trackPosX / track.trackLength;
 			gameScreen.progressBar.baukje.x = gameScreen.progressBar.width * bottomTrack.boer.trackPosX / track.trackLength;
 			//prevTime = getTimer();

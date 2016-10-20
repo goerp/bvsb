@@ -17,6 +17,7 @@ package entities
 		public static const STORK_EFFECT:int = 5;
 		public static const STUN_EFFECT:int = 6;
 		public static const BERENBURG_EFFECT:int = 7;
+		public static const ONION_EFFECT:int = 8;
 		
 		public static const MUD_SPEED:Number = 1;
 		
@@ -29,19 +30,24 @@ package entities
 		public var verticalSpeed:Number = 0;
 		public static const BOTTOM_Y:Number = 175;
 		public static const GRAVITY:Number = 1.3;
+		public static const FART_SPEED:Number = 8;
 		public var onFloor:Boolean = false;
 		
 		public function BoerEntity(nr:int) 
 		{
 			super(Boer, 1, 0, 0);
+			this.nr = nr;
 			Boer(movieClip1).head.gotoAndStop(nr);
 			Boer(movieClip2).head.gotoAndStop(nr);
-			for (var e:int = 0; e < 8; e++) {
+			for (var e:int = 0; e < 9; e++) {
 				effects.push(new Effect);	
 			}
 			
 		}
-		
+		public function setHead():void{
+			Boer(movieClip1).head.gotoAndStop(nr);
+			Boer(movieClip2).head.gotoAndStop(nr);
+		}
 		public function get x():Number 
 		{
 			return movieClip1.x;
@@ -79,21 +85,56 @@ package entities
 			if(effects[MUD_EFFECT].active){
 				speed = Math.min(speed, MUD_SPEED);
 			}
-			if(effects[BERENBURG_EFFECT].active){
-				if (Math.random() > 0.99) {
+			if (effects[BERENBURG_EFFECT].active){
+				effects[BERENBURG_EFFECT].duration--;
+				if (Math.random() > 0.93) {
 					verticalSpeed = GameHandler.JUMP_SPEED;
+					speed *= 0.75;
 					effects[BERENBURG_EFFECT].count--;
-					if (effects[BERENBURG_EFFECT].count == 0) effects[BERENBURG_EFFECT].active = false;
+					Boer(movieClip1).effectClip.gotoAndPlay("burp");
+					if (effects[BERENBURG_EFFECT].count == 0) {
+						effects[BERENBURG_EFFECT].active = false;
+					}
+				}
+				if (effects[BERENBURG_EFFECT].duration == 0){
+					effects[BERENBURG_EFFECT].count == 0;
+					effects[BERENBURG_EFFECT].active = false;
 				}
 			}
-
+			if (effects[ONION_EFFECT].active){
+				effects[ONION_EFFECT].duration--;
+				if (Math.random() > 0.93) {
+					speed = speed + FART_SPEED;
+					effects[ONION_EFFECT].count--;
+					Boer(movieClip1).effectClip.gotoAndPlay("fart");
+					if (effects[ONION_EFFECT].count == 0) {
+						effects[ONION_EFFECT].active = false;
+					}
+				}
+				if (effects[ONION_EFFECT].duration == 0){
+					effects[ONION_EFFECT].count == 0;
+					effects[ONION_EFFECT].active = false;
+				}
+			}
+			if (effects[LAKE_EFFECT].active){
+				speed = 1;
+				effects[LAKE_EFFECT].duration--;
+				if (effects[LAKE_EFFECT].duration == 0) {
+					effects[LAKE_EFFECT].active = false;
+					onFloor = true;
+					Boer(movieClip1).gotoAndStop(1);
+					setHead();
+					trackPosX +=100;
+				}
+			}
+			
 			trackPosX += speed;
 
-			if (speed == 0 || !onFloor) {
-				movieClip1.gotoAndStop("stand");
-				movieClip2.gotoAndStop("stand");
+			//if (speed == 0 || !onFloor) {
+			//	movieClip1.gotoAndStop("stand");
+			//	movieClip2.gotoAndStop("stand");
 				//currentFrame = 0;
-			}else {
+			if (!effects[LAKE_EFFECT].active){
 				if(effects[MUD_EFFECT].active){
 					movieClip1.gotoAndStop(Math.floor((currentFrame+= speed*3) % 30));
 					movieClip2.gotoAndStop(Math.floor((currentFrame+= speed*3) % 30));
@@ -114,7 +155,7 @@ package entities
 					movieClip2.y = BOTTOM_Y;
 				}
 				
-			}else {
+			}else if (!effects[LAKE_EFFECT].active){
 				onFloor = true;
 			}
 			if (effects[STORK_EFFECT].active) {
