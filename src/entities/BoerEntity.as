@@ -1,5 +1,6 @@
 package entities 
 {
+	import flash.geom.Rectangle;
 	import screenz.Track;
 	import screenz.TrackEntity;
 	/**
@@ -75,19 +76,24 @@ package entities
 			}
 			
 			var diff:Number = trackEntity.boer.trackPosX - trackEntity.otherBoer.trackPosX;
-			var speedfactor:Number = 0.4 * (Math.max(speed, 0.0001) / GameHandler.MAX_SPEED) ;
-			var diffFactor:Number = 0.4 * Math.min(1, (Math.abs(diff) * 30 / track.trackLength)) * (diff == 0?1:diff / Math.abs(diff));
-			var relPos:Number = 0.2 + speedfactor + diffFactor ;
+			var speedfactor:Number = 0.35 * (Math.max(speed, 0.0001) / GameHandler.MAX_SPEED) ;
+			var diffFactor:Number = 0.35 * Math.min(1, (Math.abs(diff) * 30 / track.trackLength)) * (diff == 0?1:diff / Math.abs(diff));
+			var relPos:Number = 0.3 + speedfactor + diffFactor ;
 
 			movieClip1.x += ((relPos * 1200) - (movieClip1.x)) / 10;
 			movieClip2.x += ((relPos * 1200) - (movieClip1.x)) / 10;
+			//trackEntity.backLayer.x += TrackEntity.BACK_LAYER_SPEED * ((relPos * 1200) - (movieClip1.x)) / 10
+			//trackEntity.frontLayer.x += TrackEntity.FRONT_LAYER_SPEED* ((relPos * 1200) - (movieClip1.x)) / 10
+			//trackEntity.skyLayer.x += TrackEntity.SKY_LAYER_SPEED* ((relPos * 1200) - (movieClip1.x)) / 10
+			//trackEntity.cloudLayer.x+=TrackEntity.CLOUD_LAYER_SPEED*((relPos * 1200) - (movieClip1.x)) / 10
+			
 			
 			if(effects[MUD_EFFECT].active){
 				speed = Math.min(speed, MUD_SPEED);
 			}
 			if (effects[BERENBURG_EFFECT].active){
 				effects[BERENBURG_EFFECT].duration--;
-				if (Math.random() > 0.93) {
+				if (Math.random() > 0.99) {
 					verticalSpeed = GameHandler.JUMP_SPEED;
 					speed *= 0.75;
 					effects[BERENBURG_EFFECT].count--;
@@ -103,7 +109,7 @@ package entities
 			}
 			if (effects[ONION_EFFECT].active){
 				effects[ONION_EFFECT].duration--;
-				if (Math.random() > 0.93) {
+				if (Math.random() > 0.99) {
 					speed = speed + FART_SPEED;
 					effects[ONION_EFFECT].count--;
 					Boer(movieClip1).effectClip.gotoAndPlay("fart");
@@ -118,13 +124,15 @@ package entities
 			}
 			if (effects[LAKE_EFFECT].active){
 				speed = 1;
-				effects[LAKE_EFFECT].duration--;
-				if (effects[LAKE_EFFECT].duration == 0) {
+				//effects[LAKE_EFFECT].duration--;
+				var r1:Rectangle = effects[LAKE_EFFECT].entity.getMC(nr).getRect(movieClip1.stage);
+				//var r2:Rectangle = movieClip1.getRect(movieClip1.stage);//this doesn't work don't know why 
+				if (r1.right < movieClip1.x + 20){
+				//if (effects[LAKE_EFFECT].duration == 0) {
 					effects[LAKE_EFFECT].active = false;
 					onFloor = true;
 					Boer(movieClip1).gotoAndStop(1);
 					setHead();
-					trackPosX +=100;
 				}
 			}
 			
@@ -164,7 +172,7 @@ package entities
 					movieClip1.y = BOTTOM_Y;
 					movieClip2.y = BOTTOM_Y;
 					effects[STORK_EFFECT].active = false;
-					effects[STORK_EFFECT].entity.alreadyHit= true;
+					effects[STORK_EFFECT].entity.setAlreadyHit(true,nr);
 				}
 			}
 

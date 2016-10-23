@@ -7,6 +7,7 @@ package
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.events.TouchEvent;
 	import flash.events.TransformGestureEvent;
 	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
@@ -61,14 +62,30 @@ package
 			
 			gameScreen.addEventListener(Event.ENTER_FRAME, update);
 			
-			gameScreen.TopButton.addEventListener(MouseEvent.CLICK, topPress);
-			gameScreen.bottomButton.addEventListener(MouseEvent.CLICK, bottomPress);
+			gameScreen.stage.addEventListener(KeyboardEvent.KEY_UP, handleKeyPress);
+			gameScreen.stage.addEventListener(TouchEvent.TOUCH_BEGIN, handleTouchBegin);
 			prevTime = getTimer();
 		}
-		public function topPress(me:MouseEvent):void {
+		public function handleTouchBegin(te:TouchEvent):void{
+			if (te.stageX < 300){
+				topPress(te);
+			}
+			if (te.stageX >900){
+				bottomPress(te);
+			}
+		}
+		public function handleKeyPress(ke:KeyboardEvent):void{
+			if (ke.keyCode == Keyboard.A){
+				topPress(ke);
+			}
+			if (ke.keyCode == Keyboard.L){
+				bottomPress(ke);
+			}
+		}
+		public function topPress(e:Event):void {
 			if(topTrack.boer.verticalSpeed==0) topTrack.boer.verticalSpeed=JUMP_SPEED;
 		}
-		public function bottomPress(me:MouseEvent):void {
+		public function bottomPress(e:Event):void {
 			if(bottomTrack.boer.verticalSpeed==0) bottomTrack.boer.verticalSpeed=JUMP_SPEED;
 		}
 		

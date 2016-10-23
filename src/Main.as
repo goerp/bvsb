@@ -142,7 +142,7 @@ package
 		public function handleKeys(event:KeyboardEvent):void
 		{
 			if(event.keyCode == Keyboard.BACK|| event.keyCode==Keyboard.HOME||event.keyCode==Keyboard.MENU) {
-				NativeApplication.nativeApplication.exit();
+				//NativeApplication.nativeApplication.exit();
 			}
 		}
 

@@ -23,7 +23,8 @@ package entities
 		private  var _drawn2:Boolean = false;
 		public var layer1:Sprite;
 		public var layer2:Sprite;
-		public var alreadyHit:Boolean=false;
+		public var _alreadyHit1:Boolean = false;
+		public var _alreadyHit2:Boolean=false;
 		public function Entity(movieClip:Class, relativeSpeed:int, trackPosX:Number, trackPosY:Number, frame:int = 1, scaleX:Number = 1, scaleY:Number = 1, cacheAsBitmap:Boolean = false ) 
 		{
 			super();
@@ -46,7 +47,9 @@ package entities
 			this.trackPosX = trackPosX;
 			this.trackPosY = trackPosY;
 		}
-		
+		public function getMC(nr:int):MovieClip{return nr == 1?movieClip1:movieClip2; }
+		public function getAlreadyHit(nr:int):Boolean{return nr == 1?_alreadyHit1:_alreadyHit2; }
+		public function setAlreadyHit(hit:Boolean, nr:int):void{nr == 1?_alreadyHit1=hit:_alreadyHit2=hit; }
 		public function get trackPosX():Number 
 		{
 			return _trackPosX;
