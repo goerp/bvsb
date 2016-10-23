@@ -79,22 +79,23 @@ package entities
 			var speedfactor:Number = 0.35 * (Math.max(speed, 0.0001) / GameHandler.MAX_SPEED) ;
 			var diffFactor:Number = 0.35 * Math.min(1, (Math.abs(diff) * 30 / track.trackLength)) * (diff == 0?1:diff / Math.abs(diff));
 			var relPos:Number = 0.3 + speedfactor + diffFactor ;
+			
+			var dx:Number = ((relPos * 1200) - (movieClip1.x)) / 10;
+			movieClip1.x += dx;
+			movieClip2.x += dx;
+			trackEntity.backLayer.x += dx;//TrackEntity.BACK_LAYER_SPEED * ((relPos * 1200) - (movieClip1.x)) / 10
+			trackEntity.frontLayer.x += dx;// TrackEntity.FRONT_LAYER_SPEED * ((relPos * 1200) - (movieClip1.x)) / 10
+			trackEntity.skyLayer.x += dx;// TrackEntity.SKY_LAYER_SPEED * ((relPos * 1200) - (movieClip1.x)) / 10
+			trackEntity.cloudLayer.x += dx;// TrackEntity.CLOUD_LAYER_SPEED * ((relPos * 1200) - (movieClip1.x)) / 10
 
-			movieClip1.x += ((relPos * 1200) - (movieClip1.x)) / 10;
-			movieClip2.x += ((relPos * 1200) - (movieClip1.x)) / 10;
-			//trackEntity.backLayer.x += TrackEntity.BACK_LAYER_SPEED * ((relPos * 1200) - (movieClip1.x)) / 10
-			//trackEntity.frontLayer.x += TrackEntity.FRONT_LAYER_SPEED* ((relPos * 1200) - (movieClip1.x)) / 10
-			//trackEntity.skyLayer.x += TrackEntity.SKY_LAYER_SPEED* ((relPos * 1200) - (movieClip1.x)) / 10
-			//trackEntity.cloudLayer.x+=TrackEntity.CLOUD_LAYER_SPEED*((relPos * 1200) - (movieClip1.x)) / 10
-			
-			
 			if(effects[MUD_EFFECT].active){
 				speed = Math.min(speed, MUD_SPEED);
 			}
 			if (effects[BERENBURG_EFFECT].active){
 				effects[BERENBURG_EFFECT].duration--;
-				if (Math.random() > 0.99) {
+				if (Math.random() > 0.98) {
 					verticalSpeed = GameHandler.JUMP_SPEED;
+					trackEntity.playHiccups();
 					speed *= 0.75;
 					effects[BERENBURG_EFFECT].count--;
 					Boer(movieClip1).effectClip.gotoAndPlay("burp");
@@ -109,7 +110,8 @@ package entities
 			}
 			if (effects[ONION_EFFECT].active){
 				effects[ONION_EFFECT].duration--;
-				if (Math.random() > 0.99) {
+				if (Math.random() > 0.98) {
+					trackEntity.playFart();
 					speed = speed + FART_SPEED;
 					effects[ONION_EFFECT].count--;
 					Boer(movieClip1).effectClip.gotoAndPlay("fart");
@@ -120,6 +122,17 @@ package entities
 				if (effects[ONION_EFFECT].duration == 0){
 					effects[ONION_EFFECT].count == 0;
 					effects[ONION_EFFECT].active = false;
+				}
+			}
+			if (effects[CAT_EFFECT].active){
+				speed = 0;
+				effects[CAT_EFFECT].duration--;
+				if (effects[CAT_EFFECT].duration == 0){
+					effects[CAT_EFFECT].active = false;
+					effects[CAT_EFFECT].entity.getMC(1).gotoAndPlay("lick");
+					effects[CAT_EFFECT].entity.getMC(2).gotoAndPlay("lick");
+					trackEntity.channel.stop();
+					Boer(movieClip1).gotoAndPlay(1);
 				}
 			}
 			if (effects[LAKE_EFFECT].active){
@@ -133,6 +146,7 @@ package entities
 					onFloor = true;
 					Boer(movieClip1).gotoAndStop(1);
 					setHead();
+					trackEntity.channel.stop();
 				}
 			}
 			
@@ -142,7 +156,7 @@ package entities
 			//	movieClip1.gotoAndStop("stand");
 			//	movieClip2.gotoAndStop("stand");
 				//currentFrame = 0;
-			if (!effects[LAKE_EFFECT].active){
+			if (!effects[LAKE_EFFECT].active && !effects[CAT_EFFECT].active){
 				if(effects[MUD_EFFECT].active){
 					movieClip1.gotoAndStop(Math.floor((currentFrame+= speed*3) % 30));
 					movieClip2.gotoAndStop(Math.floor((currentFrame+= speed*3) % 30));

@@ -2,6 +2,7 @@ package screenz
 {
 	import entities.BerenburgEntity;
 	import entities.BoerEntity;
+	import entities.CatEntity;
 	import entities.Entity;
 	import entities.LakeEntity;
 	import entities.Layer;
@@ -13,7 +14,11 @@ package screenz
 	import flash.display.BitmapData;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.media.Sound;
+	import flash.media.SoundChannel;
+	import flash.media.SoundTransform;
 	
 	/**
 	 * ...
@@ -31,6 +36,8 @@ package screenz
 		public var nr:int;
 		public var rectangle:Rectangle;
 		
+		private var zeroPoint:Point = new Point(0, 0);
+		
 		//paralax
 		public static const SKY_LAYER_SPEED:Number =0.5;
 		public static const CLOUD_LAYER_SPEED:Number = 2;
@@ -43,6 +50,18 @@ package screenz
 		public static const MAX_BURP_DURATION:int = 500;
 		public static const MAX_FART_DURATION:int = 500;
 		public static const LAKE_DURATION:int = 60;
+		public static const CAT_DURATION:int = 80;
+		
+		public var channel:SoundChannel = new SoundChannel;
+		public var mooSound:Sound = new Resources.MOO;
+		public var fartSound:Sound=new Resources.FART;
+		public var bubblingSound:Sound = new Resources.BUBBLING;
+		public var jumpSound:Sound = new Resources.JUMP;
+		public var hiccupSound:Sound = new Resources.HICCUP;
+		public var purrSound:Sound = new Resources.PURR;
+		
+		
+		public var sTransform:SoundTransform = new SoundTransform;
 		
 		public function TrackEntity(nr:int) 
 		{
@@ -52,6 +71,7 @@ package screenz
 			addChild(backLayer);
 			addChild(frontLayer);
 			this.rectangle = new Rectangle(0, 0, 1200, 400);
+			sTransform.pan=nr - 1;
 		}
 		public function build(otherTrack:TrackEntity, boerEntity:BoerEntity, otherBoerEntity:BoerEntity, track:Track):void 
 		{
@@ -158,7 +178,10 @@ package screenz
 							boer.effects[BoerEntity.BERENBURG_EFFECT].count += NR_BURPS;
 							boer.effects[BoerEntity.BERENBURG_EFFECT].entity= e;
 							boer.effects[BoerEntity.BERENBURG_EFFECT].duration = MAX_BURP_DURATION;
-							e.setAlreadyHit(true,nr);
+							e.setAlreadyHit(true, 1);
+							e.setAlreadyHit(true,2);
+							e.movieClip1.visible = false;
+							e.movieClip2.visible = false;
 						}
 					}else if (drawn && e is OnionEntity && !e.getAlreadyHit(nr)) {
 						if (boer.movieClip1.hitTestObject(mc.hitbox)) {
@@ -171,7 +194,31 @@ package screenz
 							boer.effects[BoerEntity.ONION_EFFECT].count += NR_FARTS;
 							boer.effects[BoerEntity.ONION_EFFECT].entity= e;
 							boer.effects[BoerEntity.ONION_EFFECT].duration = MAX_FART_DURATION;
-							e.setAlreadyHit(true,nr);
+							e.setAlreadyHit(true, 1);
+							e.setAlreadyHit(true, 2);
+							e.movieClip1.visible = false;
+							e.movieClip2.visible = false;
+						}
+					}else if (drawn && e is CatEntity && !e.getAlreadyHit(nr)) {
+						if (boer.movieClip1.hitTestObject(mc.hitbox) && boer.movieClip1.localToGlobal(zeroPoint).x+30<mc.localToGlobal(zeroPoint).x) {
+							//this.graphics.clear();
+							//this.graphics.lineStyle(2, 0xFF0000);
+							//this.graphics.drawRect(r1.x, r1.y, r1.width, r1.height);
+							//this.graphics.drawRect(r2.x, r2.y, r2.width, r2.height);
+
+							boer.effects[BoerEntity.CAT_EFFECT].active = true;
+							boer.effects[BoerEntity.CAT_EFFECT].entity= e;
+							boer.effects[BoerEntity.CAT_EFFECT].duration = CAT_DURATION;
+							
+							boer.movieClip1.gotoAndPlay("pet");
+							e.getMC(1).gotoAndStop("purr");
+							e.getMC(2).gotoAndStop("purr");
+							
+							playPurr();
+							
+							//only petted once
+							e.setAlreadyHit(true, 1);
+							e.setAlreadyHit(true,2);
 						}
 					}else if (drawn && e is LakeEntity && !e.getAlreadyHit(nr) ) {
 						if (boer.movieClip1.hitTestObject(mc.hitbox) && !boer.effects[BoerEntity.LAKE_EFFECT].active ) {
@@ -179,7 +226,10 @@ package screenz
 							//this.graphics.lineStyle(2, 0xFF0000);
 							//this.graphics.drawRect(r1.x, r1.y, r1.width, r1.height);
 							//this.graphics.drawRect(r2.x, r2.y, r2.width, r2.height);
-
+							
+							channel = bubblingSound.play();
+							setSoundTransform();
+							
 							boer.onFloor = false;
 							boer.effects[BoerEntity.LAKE_EFFECT].active = true;
 							boer.effects[BoerEntity.LAKE_EFFECT].duration = (mc.hitbox.getRect(this.stage).right - boer.movieClip1.getRect(this.stage).left)/FRONT_LAYER_SPEED;
@@ -213,6 +263,25 @@ package screenz
 				}
 			}
 			
+		}
+		public function playFart():void{
+			channel = fartSound.play();
+			setSoundTransform();
+		}
+		public function playHiccups():void{
+			channel = hiccupSound.play();
+			setSoundTransform();
+		}
+		public function playPurr():void{
+			channel = purrSound.play();
+			setSoundTransform();
+		}
+		public function playJump():void{
+			channel = jumpSound.play();
+			setSoundTransform();
+		}
+		public function setSoundTransform():void{
+			channel.soundTransform = sTransform;
 		}
 		
 	}

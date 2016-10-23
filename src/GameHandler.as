@@ -83,10 +83,16 @@ package
 			}
 		}
 		public function topPress(e:Event):void {
-			if(topTrack.boer.verticalSpeed==0) topTrack.boer.verticalSpeed=JUMP_SPEED;
+			if (topTrack.boer.verticalSpeed == 0){
+				topTrack.boer.verticalSpeed = JUMP_SPEED;
+				topTrack.playJump();
+			}
 		}
 		public function bottomPress(e:Event):void {
-			if(bottomTrack.boer.verticalSpeed==0) bottomTrack.boer.verticalSpeed=JUMP_SPEED;
+			if (bottomTrack.boer.verticalSpeed == 0){
+				bottomTrack.boer.verticalSpeed = JUMP_SPEED;
+				topTrack.playJump();
+			}
 		}
 		
 		public function update(e:Event):void {
