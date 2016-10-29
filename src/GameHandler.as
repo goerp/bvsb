@@ -39,9 +39,19 @@ package
 		private var prevTime:Number =-1;
 		private var eor1:int = 0;
 		
+		public var gameTime:uint;
+		private var startTime:uint;
+		private var minutes:uint;
+		private var seconds:String;
+		private var hundreds:String;
+		public var winningTime:int=-1;
+		
+		public static var gameHandler:GameHandler;
+		
 		public function GameHandler(gameScreen:GameScreen) 
 		{
 			this.gameScreen = gameScreen;
+			gameHandler = this;
 			
 		}
 		public function buildBackGround():void {
@@ -65,6 +75,8 @@ package
 			gameScreen.stage.addEventListener(KeyboardEvent.KEY_UP, handleKeyPress);
 			gameScreen.stage.addEventListener(TouchEvent.TOUCH_BEGIN, handleTouchBegin);
 			prevTime = getTimer();
+			startTime = getTimer();
+			winningTime=-1
 		}
 		public function handleTouchBegin(te:TouchEvent):void{
 			if (te.stageX < 300){
@@ -98,6 +110,18 @@ package
 		public function update(e:Event):void {
 			//var deltaT:int = getTimer() - prevTime;
 			//var factor:Number = deltaT / 33;
+			gameTime = getTimer() - startTime;
+			minutes = Math.floor(gameTime / 60000);
+			seconds = Math.floor((gameTime % 60000) / 1000).toString();
+			if (seconds.length == 1) seconds = "0" + seconds;
+			hundreds = Math.floor((gameTime % 1000) / 10).toString();
+			if (hundreds.length == 1) hundreds = "0" + hundreds ;
+			gameScreen.timerm0.text =  minutes.toString();;
+			gameScreen.timers0.text =  seconds.substr(0, 1);
+			gameScreen.timers1.text =  seconds.substr(1, 1);
+			gameScreen.timerh0.text =  hundreds.substr(0, 1);
+			gameScreen.timerh1.text =  hundreds.substr(1, 1);
+			
 			if (topTrack.boer.onFloor){ 
 				baukeSpeed += 0.015;
 			}
@@ -124,8 +148,23 @@ package
 			gameScreen.progressBar.bauke.x = gameScreen.progressBar.width * topTrack.boer.trackPosX / track.trackLength;
 			gameScreen.progressBar.baukje.x = gameScreen.progressBar.width * bottomTrack.boer.trackPosX / track.trackLength;
 			//prevTime = getTimer();
+			setMilk();
 		}
-		
+		public function setMilk():void{
+			if (topTrack.boer.milk > 0) {
+				gameScreen.trackTop.milkbar.visible = true;
+				gameScreen.trackTop.milkbar.bar.width = 800 * topTrack.boer.milk / (TrackEntity.MAX_MILK);
+			}else{
+				gameScreen.trackTop.milkbar.visible = false;
+			}
+			if (bottomTrack.boer.milk > 0) {
+				gameScreen.trackBottom.milkbar.visible = true;
+				gameScreen.trackBottom.milkbar.bar.width = 800 * bottomTrack.boer.milk / (TrackEntity.MAX_MILK);
+			}else{
+				gameScreen.trackBottom.milkbar.visible = false;
+			}
+		}
+
 	}
 
 }

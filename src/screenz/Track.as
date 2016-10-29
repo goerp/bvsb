@@ -5,6 +5,7 @@ package screenz
 	import entities.CloudEntity;
 	import entities.CowEntity;
 	import entities.Entity;
+	import entities.FinishEntity;
 	import entities.GrassEntity;
 	import entities.HouseEntity;
 	import entities.LakeEntity;
@@ -39,7 +40,7 @@ package screenz
 			var posx:Number = 0;
 			var e:Entity;
 			//frontlayer
-			while (posx < trackLength*3) {
+			while (posx < trackLength*3+800) {
 				if (Math.random() < 0.1) {
 					e = new HouseEntity(posx, 50);
 					frontLayerEntities.push(e);
@@ -51,7 +52,7 @@ package screenz
 			}
 			//clouds
 			posx= 0;
-			while (posx < trackLength*2) {
+			while (posx < trackLength*2+800) {
 				e = new CloudEntity(posx, 50, Math.ceil(Math.random()*5));
 				if (Math.random() < 0.1) {
 					backLayerEntities.push(e);	
@@ -61,10 +62,11 @@ package screenz
 			}
 			//obstacles
 			posx = 800;
-			while (posx < trackLength*4+800) {
+			
+			while (posx < trackLength*4+1000) {
 				var r:Number = Math.floor(Math.random() * 11)
 				if(r<2){
-					e = new CowEntity(posx, 250);
+					e = new CowEntity(posx, 225);
 				}else if(r<4){
 					e = new CatEntity(posx, 250);
 				}else if(r<5){
@@ -83,6 +85,9 @@ package screenz
 				posx += e.movieClip1.width*3/e.movieClip1.scaleX;
 				e = null;
 			}
+			e = new FinishEntity(trackLength*4, 0);
+			obstacleEntities.push(e);
+			e = null;
 		}
 		
 		

@@ -3,7 +3,9 @@ package screenz
 	import entities.BerenburgEntity;
 	import entities.BoerEntity;
 	import entities.CatEntity;
+	import entities.CowEntity;
 	import entities.Entity;
+	import entities.FinishEntity;
 	import entities.LakeEntity;
 	import entities.Layer;
 	import entities.MudEntity;
@@ -51,6 +53,7 @@ package screenz
 		public static const MAX_FART_DURATION:int = 500;
 		public static const LAKE_DURATION:int = 60;
 		public static const CAT_DURATION:int = 80;
+		public static const MAX_MILK:int = 100;
 		
 		public var channel:SoundChannel = new SoundChannel;
 		public var mooSound:Sound = new Resources.MOO;
@@ -169,10 +172,6 @@ package screenz
 						}
 					}else if (drawn && e is BerenburgEntity && !e.getAlreadyHit(nr)) {
 						if (boer.movieClip1.hitTestObject(mc.hitbox)) {
-							//this.graphics.clear();
-							//this.graphics.lineStyle(2, 0xFF0000);
-							//this.graphics.drawRect(r1.x, r1.y, r1.width, r1.height);
-							//this.graphics.drawRect(r2.x, r2.y, r2.width, r2.height);
 
 							boer.effects[BoerEntity.BERENBURG_EFFECT].active = true;
 							boer.effects[BoerEntity.BERENBURG_EFFECT].count += NR_BURPS;
@@ -185,10 +184,6 @@ package screenz
 						}
 					}else if (drawn && e is OnionEntity && !e.getAlreadyHit(nr)) {
 						if (boer.movieClip1.hitTestObject(mc.hitbox)) {
-							//this.graphics.clear();
-							//this.graphics.lineStyle(2, 0xFF0000);
-							//this.graphics.drawRect(r1.x, r1.y, r1.width, r1.height);
-							//this.graphics.drawRect(r2.x, r2.y, r2.width, r2.height);
 
 							boer.effects[BoerEntity.ONION_EFFECT].active = true;
 							boer.effects[BoerEntity.ONION_EFFECT].count += NR_FARTS;
@@ -238,10 +233,47 @@ package screenz
 							Boer(boer.movieClip1).effectClip.gotoAndPlay("splash");
 							Boer(boer.movieClip1).gotoAndStop("goneunder");
 						}
+					}else if (drawn && e is CowEntity && !e.getAlreadyHit(nr) ) {
+						if (boer.movieClip1.hitTestObject(mc.hitbox)) {
+							//this.graphics.clear();
+							//this.graphics.lineStyle(2, 0xFF0000);
+							//this.graphics.drawRect(r1.x, r1.y, r1.width, r1.height);
+							//this.graphics.drawRect(r2.x, r2.y, r2.width, r2.height);
+							
+							boer.effects[BoerEntity.COW_EFFECT].active = true;
+							boer.effects[BoerEntity.COW_EFFECT].duration = 30+Math.floor(Math.random()*(TrackEntity.MAX_MILK-30));
+							boer.effects[BoerEntity.COW_EFFECT].entity = e;
+							e.setAlreadyHit(true, 1);
+							e.setAlreadyHit(true,2);
+							Boer(boer.movieClip1).gotoAndPlay("milking");
+							Boer(boer.movieClip1).head.gotoAndStop(nr);
+							Cow(e.movieClip1).gotoAndPlay(1);
+							Cow(e.movieClip2).gotoAndPlay(1);
+						}
+					}else if (drawn && e is FinishEntity && !e.getAlreadyHit(nr) ) {
+						if (boer.movieClip1.localToGlobal(zeroPoint).x>mc.hitbox.localToGlobal(zeroPoint).x) {
+							//this.graphics.clear();
+							//this.graphics.lineStyle(2, 0xFF0000);
+							//this.graphics.drawRect(r1.x, r1.y, r1.width, r1.height);
+							//this.graphics.drawRect(r2.x, r2.y, r2.width, r2.height);
+							e.setAlreadyHit(true,nr);
+							if (otherBoer.effects[BoerEntity.WINNER_EFFECT].active){
+								boer.effects[BoerEntity.LOSER_EFFECT].active = true;
+								boer.effects[BoerEntity.LOSER_EFFECT].duration = 60;
+								Boer(boer.movieClip1).gotoAndStop("loser");
+								Boer(boer.movieClip1).head.gotoAndStop(nr);
+								boer.score = GameHandler.gameHandler.gameTime;
+
+							}else{
+								boer.effects[BoerEntity.WINNER_EFFECT].active = true;
+								Boer(boer.movieClip1).gotoAndPlay("winner");
+								Boer(boer.movieClip1).head.gotoAndStop(nr);
+								boer.score = GameHandler.gameHandler.gameTime;
+							}
+						}
 					}
+
 				}
-
-
 			}
 
 			

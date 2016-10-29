@@ -1,5 +1,6 @@
 package entities 
 {
+	import flash.events.Event;
 	import flash.geom.Rectangle;
 	import screenz.Track;
 	import screenz.TrackEntity;
@@ -19,8 +20,11 @@ package entities
 		public static const STUN_EFFECT:int = 6;
 		public static const BERENBURG_EFFECT:int = 7;
 		public static const ONION_EFFECT:int = 8;
+		public static const WINNER_EFFECT:int = 9;
+		public static const LOSER_EFFECT:int = 10;
 		
 		public static const MUD_SPEED:Number = 1;
+		public static const MILK_SPEED:int = 5;
 		
 		public var effects:Vector.<Effect> = new Vector.<Effect>;
 		
@@ -34,13 +38,17 @@ package entities
 		public static const FART_SPEED:Number = 8;
 		public var onFloor:Boolean = false;
 		
+		public var score:uint = 0;
+		
+		public var milk:int = 0;
+		
 		public function BoerEntity(nr:int) 
 		{
 			super(Boer, 1, 0, 0);
 			this.nr = nr;
 			Boer(movieClip1).head.gotoAndStop(nr);
 			Boer(movieClip2).head.gotoAndStop(nr);
-			for (var e:int = 0; e < 9; e++) {
+			for (var e:int = 0; e < 11; e++) {
 				effects.push(new Effect);	
 			}
 			
@@ -71,14 +79,28 @@ package entities
 		
 		
 		public function update(speed:Number, trackEntity:TrackEntity, track:Track):Number {
+			if (effects[WINNER_EFFECT].active) return 0;
+			if (effects[LOSER_EFFECT].active) {
+				effects[LOSER_EFFECT].duration--;
+				trace(effects[LOSER_EFFECT].duration);
+				if (effects[LOSER_EFFECT].duration == 0){
+					GameHandler.gameHandler.gameScreen.removeEventListener(Event.ENTER_FRAME, update);
+					if (nr == 1){
+						Main.main.showEndScreen(score, trackEntity.otherBoer.score);
+					}else{
+						Main.main.showEndScreen(trackEntity.otherBoer.score,score);
+					}
+				}
+				return 0;
+			}
 			if (effects[STORK_EFFECT].active) {
 				speed = StorkEntity(effects[STORK_EFFECT].entity).speed;
 			}
 			
 			var diff:Number = trackEntity.boer.trackPosX - trackEntity.otherBoer.trackPosX;
-			var speedfactor:Number = 0.35 * (Math.max(speed, 0.0001) / GameHandler.MAX_SPEED) ;
-			var diffFactor:Number = 0.35 * Math.min(1, (Math.abs(diff) * 30 / track.trackLength)) * (diff == 0?1:diff / Math.abs(diff));
-			var relPos:Number = 0.3 + speedfactor + diffFactor ;
+			var speedfactor:Number = 0.25 * (Math.max(speed, 0.0001) / GameHandler.MAX_SPEED) ;
+			var diffFactor:Number = 0.25 * Math.min(1, (Math.abs(diff) * 30 / track.trackLength)) * (diff == 0?1:diff / Math.abs(diff));
+			var relPos:Number = 0.5 + speedfactor + diffFactor ;
 			
 			var dx:Number = ((relPos * 1200) - (movieClip1.x)) / 10;
 			movieClip1.x += dx;
@@ -129,8 +151,8 @@ package entities
 				effects[CAT_EFFECT].duration--;
 				if (effects[CAT_EFFECT].duration == 0){
 					effects[CAT_EFFECT].active = false;
-					effects[CAT_EFFECT].entity.getMC(1).gotoAndPlay("lick");
-					effects[CAT_EFFECT].entity.getMC(2).gotoAndPlay("lick");
+					//effects[CAT_EFFECT].entity.getMC(1).gotoAndPlay("lick");
+					//effects[CAT_EFFECT].entity.getMC(2).gotoAndPlay("lick");
 					trackEntity.channel.stop();
 					Boer(movieClip1).gotoAndPlay(1);
 				}
@@ -149,14 +171,24 @@ package entities
 					trackEntity.channel.stop();
 				}
 			}
-			
-			trackPosX += speed;
+			if (effects[COW_EFFECT].active){
+				speed = 0;
+				milk++;
+				effects[COW_EFFECT].duration--;
+				if (effects[COW_EFFECT].duration == 0){
+					effects[MILK_EFFECT].active = true;
+					effects[COW_EFFECT].active = false;
+					effects[COW_EFFECT].entity.getMC(1).gotoAndStop("sleep");
+					effects[COW_EFFECT].entity.getMC(2).gotoAndStop("sleep");
+					Boer(movieClip1).gotoAndStop(1);
+				}
+			}
 
 			//if (speed == 0 || !onFloor) {
 			//	movieClip1.gotoAndStop("stand");
 			//	movieClip2.gotoAndStop("stand");
 				//currentFrame = 0;
-			if (!effects[LAKE_EFFECT].active && !effects[CAT_EFFECT].active){
+			if (!effects[LAKE_EFFECT].active && !effects[CAT_EFFECT].active && !effects[COW_EFFECT].active){
 				if(effects[MUD_EFFECT].active){
 					movieClip1.gotoAndStop(Math.floor((currentFrame+= speed*3) % 30));
 					movieClip2.gotoAndStop(Math.floor((currentFrame+= speed*3) % 30));
@@ -189,8 +221,24 @@ package entities
 					effects[STORK_EFFECT].entity.setAlreadyHit(true,nr);
 				}
 			}
-
+			if (onFloor && effects[MILK_EFFECT].active){
+				milk --;
+				if (milk < 0) {
+					milk = 0;
+					movieClip1.gotoAndStop(1);
+					movieClip2.gotoAndStop(1);
+					movieClip1.head.gotoAndStop(nr);
+					movieClip2.head.gotoAndStop(nr);
+					effects[MILK_EFFECT].active = false;
+				}
+				 if (!effects[COW_EFFECT].active  && !effects[CAT_EFFECT].active && !effects[MUD_EFFECT].active && !effects[LAKE_EFFECT].active){
+					 trackPosX += speed+ MILK_SPEED;
+					return speed + MILK_SPEED;
+				 }
+			}
+			trackPosX += speed;			
 			return speed;
+			
 		}
 		
 		override public function get trackPosX():Number 
