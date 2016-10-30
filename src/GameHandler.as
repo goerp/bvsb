@@ -58,6 +58,10 @@ package
 		public function buildBackGround():void {
 			track1Rect = gameScreen.trackTop.getRect(gameScreen.stage);
 			track2Rect = gameScreen.trackBottom.getRect(gameScreen.stage);
+			
+			if(topTrack && gameScreen.trackTop.getChildIndex(topTrack)!=-1) gameScreen.trackTop.removeChild(topTrack);
+			if (bottomTrack && gameScreen.trackTop.getChildIndex(bottomTrack ) !=-1) gameScreen.trackTop.removeChild(bottomTrack);
+			
 			topTrack = new TrackEntity(1);
 			bottomTrack = new TrackEntity(2);
 			var boer1:BoerEntity = new BoerEntity(1);
@@ -82,8 +86,9 @@ package
 			if(Photomaker.baukjeBitmap)Boer(boer2.movieClip1).head.containerClip.addChild(Photomaker.baukjeBitmap);
 			*/
 			
-			track = new Track(topTrack, bottomTrack);
-			track.build();
+			if(!track) track = new Track();
+			track.build(topTrack, bottomTrack);
+			
 			gameScreen.trackTop.addChild(topTrack);
 			gameScreen.trackBottom.addChild(bottomTrack);
 

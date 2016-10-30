@@ -82,12 +82,20 @@ package screenz
 			this.otherTrack = otherTrack;
 			
 			skyLayer.setRect(nr == 1?GameHandler.track1Rect:GameHandler.track2Rect);
+			skyLayer.x = 0;
 			
 			cloudLayer.setRect(nr == 1?GameHandler.track1Rect:GameHandler.track2Rect);
-			
+			cloudLayer.x = 0;
 			backLayer.setRect(nr == 1?GameHandler.track1Rect:GameHandler.track2Rect);
-			
+			backLayer.x = 0;
 			frontLayer.setRect(nr == 1?GameHandler.track1Rect:GameHandler.track2Rect);
+			frontLayer.x = 0;
+			var mc:MovieClip; 
+			skyLayer.removeChildren();	
+			cloudLayer.removeChildren();
+			backLayer.removeChildren();
+			frontLayer.removeChildren();
+			
 			for each(var e:Entity in track.backLayerEntities) {
 				cloudLayer.addEntity(e, nr);	
 				cloudLayer.initDrawn(e, nr,this) 
@@ -129,10 +137,14 @@ package screenz
 			boer.movieClip1.scaleX = 1;
 			boer.movieClip1.scaleY = 1;
 			boer.movieClip1.x = 600;
+			boer.trackPosX = 0;
 			boer.movieClip1.y = BoerEntity.BOTTOM_Y;
 			boer.movieClip1.gotoAndStop(nr);
 			boer.movieClip2.gotoAndStop(nr);
-			
+			for (var i:int = 0; i < 11; i++) {
+				boer.effects[i].active = false;
+			}
+
 			addChild(boer.movieClip1);
 
 		}

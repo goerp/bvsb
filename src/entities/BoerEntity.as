@@ -167,6 +167,7 @@ package entities
 					effects[LAKE_EFFECT].active = false;
 					onFloor = true;
 					Boer(movieClip1).gotoAndStop(1);
+					Boer(movieClip2).gotoAndStop(1);
 					setHead();
 					trackEntity.channel.stop();
 				}
@@ -181,6 +182,8 @@ package entities
 					effects[COW_EFFECT].entity.getMC(1).gotoAndStop("sleep");
 					effects[COW_EFFECT].entity.getMC(2).gotoAndStop("sleep");
 					Boer(movieClip1).gotoAndStop(1);
+					Boer(movieClip2).gotoAndStop(1);
+					setHead();
 				}
 			}
 

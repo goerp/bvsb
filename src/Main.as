@@ -42,6 +42,8 @@
 		private var t:Timer = new Timer(4000, 0);
 		public var bauke:Boer = new Boer;
 		public var baukje:Boer = new Boer;
+		public var baukeHead:Head= new Head;
+		public var baukjeHead:Head= new Head;
 		public static var main:Main;
 		public var gameHandler:GameHandler;
 		public static var highscores:Array;
@@ -95,7 +97,7 @@
 				startScreen["screens"].y = this.height/ 2 - startScreen["screens"].height / 2;
 			}
 			
-			startButton.x = 800;// this.width / 2 - startButton.width;
+			startButton.x = 900;// this.width / 2 - startButton.width;
 			startButton.y = 400;// this.height / 2 - startButton.height / 2;
 			startButton.addEventListener(MouseEvent.CLICK, initGame);
 			startScreen.addChildAt(startScreen["screens"][startScreen["currentScreen"]], 0);
@@ -117,26 +119,38 @@
 			bauke.scaleY = 3;
 			baukje.scaleX = 3;
 			baukje.scaleY = 3;
-			center(bauke, player1Screen);
-			center(baukje, player2Screen);
+			
+			baukeHead.scaleX = 2;
+			baukeHead.scaleY = 2;
+			baukjeHead.scaleX = 2;
+			baukjeHead.scaleY = 2;
+			
+			baukeHead.x = 500;
+			baukeHead.y= 400;
+			baukjeHead.x = 500;
+			baukjeHead.y= 400;
+
+			//center(baukeHead, player1Screen);
+			//center(baukjeHead, player2Screen);
+			
 			player1Screen.readyButton.addEventListener(MouseEvent.CLICK, gotoPlayer2Screen);
-			player1Screen.addChild(bauke);
+			player1Screen.addChild(baukeHead);
 			bauke.head.containerClip.removeChildren();
-			var vid:Video = photoMaker.activateCam(bauke.head.containerClip);
-			player2Screen.addChild(baukje);
+			var vid:Video = photoMaker.activateCam(baukeHead.containerClip);
+			player2Screen.addChild(baukjeHead);
 			player2Screen.readyButton.addEventListener(MouseEvent.CLICK, startGame);
 			removeChild(startScreen);
 			removeChild(startButton);
 			addChild(player1Screen);
 		}
 		private function gotoPlayer2Screen(e:Event):void{
-			if (bauke.head.containerClip.numChildren == 1 && bauke.head.containerClip.getChildAt(0) is Video){
-				var bd:BitmapData = new BitmapData(bauke.head.containerClip.width, bauke.head.containerClip.height);
-				bd.draw(bauke.head.containerClip.getChildAt(0));
+			if (baukeHead.containerClip.numChildren == 1 && baukeHead.containerClip.getChildAt(0) is Video){
+				var bd:BitmapData = new BitmapData(baukeHead.containerClip.width, baukeHead.containerClip.height);
+				bd.draw(baukeHead.containerClip.getChildAt(0));
 				var b:Bitmap = new Bitmap(bd);
 				Photomaker.baukeBitmap = b;
-				bauke.head.containerClip.removeChildren();
-				bauke.head.containerClip.addChild(b);
+				baukeHead.containerClip.removeChildren();
+				baukeHead.containerClip.addChild(b);
 			}
 			addChild(player2Screen);
 			removeChild(player1Screen);
@@ -167,15 +181,19 @@
 		}
 		public function showEndScreen(baukeScore:uint, baukjeScore:uint):void{
 			if (baukeScore > baukjeScore){
+				endScreen.head.gotoAndStop(2);
 				endScreen.winnerName.text = "'Baukje'";
 				endScreen.winningTime.text = HighscoreList.timeToString(baukjeScore);
 				GameHandler.gameHandler.winningTime = baukjeScore;
+				
 				if (isHighScore(baukjeScore)){
+					
 					//endScreen.winnerName.visible = true;
 					endScreen.inputLabel.visible = true;
 					endScreen.nameInput.visible = true;
 					endScreen.readyButton.visible = true;
 				}else{
+					endScreen.head.gotoAndStop(1);
 					//endScreen.winnerName.visible = true;
 					endScreen.inputLabel.visible = false;
 					endScreen.nameInput.visible = false;
@@ -216,7 +234,11 @@
 		
 		public function checkHighScore(e:Event):void{
 			
-			updateHighScores(GameHandler.gameHandler.winningTime, endScreen.nameInput.text+ " (" + endScreen.winnerName.text +")");
+			updateHighScores(GameHandler.gameHandler.winningTime, endScreen.nameInput.text + " (" + endScreen.winnerName.text +")");
+			removeChild(endScreen);
+			addChild(startScreen);
+			addChild(startButton);
+			startTimer();
 		}
 		public function handleKeys(event:KeyboardEvent):void
 		{

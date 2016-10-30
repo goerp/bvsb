@@ -29,13 +29,21 @@ package screenz
 		public var bottomTrack:TrackEntity;
 		
 		
-		public function Track(topTrack:TrackEntity, bottomTrack:TrackEntity) 
+		public function Track() 
 		{
+			
+		}
+		public function build(topTrack:TrackEntity, bottomTrack:TrackEntity):void {
 			this.topTrack = topTrack;
 			this.bottomTrack = bottomTrack;
 			
-		}
-		public function build():void {
+			backLayerEntities=new Vector.<Entity>;
+			frontLayerEntities=new Vector.<Entity>;
+			skyLayerEntities=new Vector.<Entity>;
+			obstacleEntities= new Vector.<Entity>;
+			storks= new Vector.<StorkEntity>;
+			
+			
 			skyLayerEntities.push(new SunEntity(300, 30));
 			var posx:Number = 0;
 			var e:Entity;
