@@ -1,6 +1,7 @@
 package 
 {
 	import entities.BoerEntity;
+	import entities.Photomaker;
 	import entities.SunEntity;
 	import flash.display.Sprite;
 	import flash.display3D.textures.RectangleTexture;
@@ -60,8 +61,27 @@ package
 			topTrack = new TrackEntity(1);
 			bottomTrack = new TrackEntity(2);
 			var boer1:BoerEntity = new BoerEntity(1);
-			var boer2:BoerEntity=new BoerEntity(2);
-
+			var boer2:BoerEntity = new BoerEntity(2);
+			/*
+			if (Photomaker.baukeBitmap) {
+				Boer(boer1.movieClip1).head.containerClip.addChild(Photomaker.baukeBitmap);
+				Boer(boer1.movieClip1).gotoAndStop(31);
+				if(Boer(boer1.movieClip1).head) Boer(boer1.movieClip1).head.containerClip.addChild(Photomaker.baukeBitmap);
+				Boer(boer1.movieClip1).gotoAndStop(40);
+				if(Boer(boer1.movieClip1).head) Boer(boer1.movieClip1).head.containerClip.addChild(Photomaker.baukeBitmap);
+				Boer(boer1.movieClip1).gotoAndStop(41);
+				if(Boer(boer1.movieClip1).head) Boer(boer1.movieClip1).head.containerClip.addChild(Photomaker.baukeBitmap);
+				Boer(boer1.movieClip1).gotoAndStop(51);
+				if(Boer(boer1.movieClip1).head) Boer(boer1.movieClip1).head.containerClip.addChild(Photomaker.baukeBitmap);
+				Boer(boer1.movieClip1).gotoAndStop(65);
+				if(Boer(boer1.movieClip1).head) Boer(boer1.movieClip1).head.containerClip.addChild(Photomaker.baukeBitmap);
+				Boer(boer1.movieClip1).gotoAndStop(66);
+				if (Boer(boer1.movieClip1).head) Boer(boer1.movieClip1).head.containerClip.addChild(Photomaker.baukeBitmap);
+				Boer(boer1.movieClip1).gotoAndStop(1);
+			}
+			if(Photomaker.baukjeBitmap)Boer(boer2.movieClip1).head.containerClip.addChild(Photomaker.baukjeBitmap);
+			*/
+			
 			track = new Track(topTrack, bottomTrack);
 			track.build();
 			gameScreen.trackTop.addChild(topTrack);
@@ -78,6 +98,9 @@ package
 			startTime = getTimer();
 			winningTime=-1
 		}
+		public function removeUpdate():void{
+			gameScreen.removeEventListener(Event.ENTER_FRAME, update);
+		}
 		public function handleTouchBegin(te:TouchEvent):void{
 			if (te.stageX < 300){
 				topPress(te);
@@ -92,6 +115,9 @@ package
 			}
 			if (ke.keyCode == Keyboard.L){
 				bottomPress(ke);
+			}
+			if (ke.keyCode == Keyboard.NUMPAD_DECIMAL){
+				Main.main.resetScores();
 			}
 		}
 		public function topPress(e:Event):void {

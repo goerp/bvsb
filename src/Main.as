@@ -1,6 +1,9 @@
 ﻿package
 {
+	import entities.Photomaker;
 	import flash.desktop.NativeApplication;
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
 	import flash.display.MovieClip;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -10,6 +13,7 @@
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
+	import flash.media.Video;
 	import flash.net.SharedObject;
 	import flash.system.Capabilities;
 	import flash.ui.Keyboard;
@@ -42,6 +46,7 @@
 		public var gameHandler:GameHandler;
 		public static var highscores:Array;
 		public static var highscoreList:HighscoreList = new HighscoreList;
+		public var photoMaker:Photomaker = new Photomaker;
 		
 		public function Main() 
 		{
@@ -80,6 +85,7 @@
 			endScreen.readyButton.addEventListener(MouseEvent.CLICK, checkHighScore);
 			Main.getHighScores();
 			highscoreList.y = 200;
+			highscoreList.x = 200;
 			highscoreList.build();
 			highscoreScreen.addChild(highscoreList);
 			startScreen["screens"] = [screen1, highscoreScreen, creditScreen];
@@ -89,8 +95,8 @@
 				startScreen["screens"].y = this.height/ 2 - startScreen["screens"].height / 2;
 			}
 			
-			startButton.x = 400;// this.width / 2 - startButton.width;
-			startButton.y = 200;// this.height / 2 - startButton.height / 2;
+			startButton.x = 800;// this.width / 2 - startButton.width;
+			startButton.y = 400;// this.height / 2 - startButton.height / 2;
 			startButton.addEventListener(MouseEvent.CLICK, initGame);
 			startScreen.addChildAt(startScreen["screens"][startScreen["currentScreen"]], 0);
 			addChild(startScreen);
@@ -115,12 +121,23 @@
 			center(baukje, player2Screen);
 			player1Screen.readyButton.addEventListener(MouseEvent.CLICK, gotoPlayer2Screen);
 			player1Screen.addChild(bauke);
+			bauke.head.containerClip.removeChildren();
+			var vid:Video = photoMaker.activateCam(bauke.head.containerClip);
 			player2Screen.addChild(baukje);
 			player2Screen.readyButton.addEventListener(MouseEvent.CLICK, startGame);
 			removeChild(startScreen);
+			removeChild(startButton);
 			addChild(player1Screen);
 		}
 		private function gotoPlayer2Screen(e:Event):void{
+			if (bauke.head.containerClip.numChildren == 1 && bauke.head.containerClip.getChildAt(0) is Video){
+				var bd:BitmapData = new BitmapData(bauke.head.containerClip.width, bauke.head.containerClip.height);
+				bd.draw(bauke.head.containerClip.getChildAt(0));
+				var b:Bitmap = new Bitmap(bd);
+				Photomaker.baukeBitmap = b;
+				bauke.head.containerClip.removeChildren();
+				bauke.head.containerClip.addChild(b);
+			}
 			addChild(player2Screen);
 			removeChild(player1Screen);
 		}
@@ -154,11 +171,16 @@
 				endScreen.winningTime.text = HighscoreList.timeToString(baukjeScore);
 				GameHandler.gameHandler.winningTime = baukjeScore;
 				if (isHighScore(baukjeScore)){
-					endScreen.winnerName.visible = true;
+					//endScreen.winnerName.visible = true;
 					endScreen.inputLabel.visible = true;
+					endScreen.nameInput.visible = true;
 					endScreen.readyButton.visible = true;
 				}else{
-					endScreen.winnerName.visible = true;
+					//endScreen.winnerName.visible = true;
+					endScreen.inputLabel.visible = false;
+					endScreen.nameInput.visible = false;
+					endScreen.readyButton.visible = false;
+
 				}
 			}else{
 				endScreen.winnerName.text = "'Bauke'";
@@ -166,13 +188,14 @@
 				GameHandler.gameHandler.winningTime = baukeScore;
 				if (isHighScore(baukjeScore)){
 					
-					endScreen.winnerName.visible = false;
-					endScreen.inputLabel.visible = false;
-					endScreen.readyButton.visible = false;
+					//endScreen.winnerName.visible = false;
+					endScreen.inputLabel.visible = true;
+					endScreen.nameInput.visible = true;
+					endScreen.readyButton.visible = true;
 
 				}else{
-					endScreen.winnerName.visible = false;
 					endScreen.inputLabel.visible = false;
+					endScreen.nameInput.visible = false;
 					endScreen.readyButton.visible = false;
 				}
 			}
@@ -184,14 +207,16 @@
 		public function isHighScore(score):Boolean{
 			var newHighScore:Boolean = false;
 			for (var i:int = 0; i < highscores.length ; i++ ){
-				if (score > highscores[i]){
-					newHighScore = true;
+				if (score < highscores[i]["score"]){
+					return true;
 				}
 			}
-			return newHighScore ;
+			return false ;
 		}
+		
 		public function checkHighScore(e:Event):void{
-			updateHighScores(GameHandler.gameHandler.winningTime, endScreen.winnerName.text);
+			
+			updateHighScores(GameHandler.gameHandler.winningTime, endScreen.nameInput.text+ " (" + endScreen.winnerName.text +")");
 		}
 		public function handleKeys(event:KeyboardEvent):void
 		{
@@ -199,7 +224,13 @@
 				NativeApplication.nativeApplication.exit();
 			}
 		}
-		
+		public function resetScores():void{
+			highscores = new Array;
+			for (var i:int = 0 ; i < 10 ; i++){
+				highscores.push({"name":(Math.random() > 0.5?"bauke": "baukje"), "score":599999});
+			}
+			saveHighScores();
+		}
 		public static function getHighScores():void{
 			var lo:SharedObject = SharedObject.getLocal("highscores");
 			highscores = lo.data.highscores;
@@ -212,9 +243,12 @@
 			}
 		}
 		public static function updateHighScores(score:uint, name:String):void{
+			var re:RegExp =/^[a-zA-Z0-9_]*$"/;
+			name = name.replace(re, "").split('\n').join('').split('\r').join('').split('\t').join('');
 			for (var i:int = 0; i < highscores.length ; i++ ){
-				if (score > highscores[i]){
+				if (score < highscores[i]["score"]){
 					highscores.insertAt(0, {"name":name, "score":score});
+					break;
 				}
 				if (highscores.length > 10) highscores.removeAt(10);
 			}
@@ -222,6 +256,7 @@
 		}
 		public static function saveHighScores():void{
 			var lo:SharedObject = SharedObject.getLocal("highscores");
+			lo.data.highscores = highscores;
 			lo.flush();
 			
 		}

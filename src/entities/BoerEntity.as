@@ -84,7 +84,7 @@ package entities
 				effects[LOSER_EFFECT].duration--;
 				trace(effects[LOSER_EFFECT].duration);
 				if (effects[LOSER_EFFECT].duration == 0){
-					GameHandler.gameHandler.gameScreen.removeEventListener(Event.ENTER_FRAME, update);
+					GameHandler.gameHandler.removeUpdate();
 					if (nr == 1){
 						Main.main.showEndScreen(score, trackEntity.otherBoer.score);
 					}else{
@@ -227,8 +227,7 @@ package entities
 					milk = 0;
 					movieClip1.gotoAndStop(1);
 					movieClip2.gotoAndStop(1);
-					movieClip1.head.gotoAndStop(nr);
-					movieClip2.head.gotoAndStop(nr);
+					setHead();
 					effects[MILK_EFFECT].active = false;
 				}
 				 if (!effects[COW_EFFECT].active  && !effects[CAT_EFFECT].active && !effects[MUD_EFFECT].active && !effects[LAKE_EFFECT].active){
