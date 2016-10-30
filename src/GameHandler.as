@@ -60,7 +60,7 @@ package
 			track2Rect = gameScreen.trackBottom.getRect(gameScreen.stage);
 			
 			if(topTrack && gameScreen.trackTop.getChildIndex(topTrack)!=-1) gameScreen.trackTop.removeChild(topTrack);
-			if (bottomTrack && gameScreen.trackTop.getChildIndex(bottomTrack ) !=-1) gameScreen.trackTop.removeChild(bottomTrack);
+			if (bottomTrack && gameScreen.trackBottom.getChildIndex(bottomTrack )!=-1) gameScreen.trackBottom.removeChild(bottomTrack);
 			
 			topTrack = new TrackEntity(1);
 			bottomTrack = new TrackEntity(2);

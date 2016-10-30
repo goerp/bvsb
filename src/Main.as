@@ -84,7 +84,6 @@
 		}
 		private function initStartScreen(e:Event):void {
 			//endScreen.readyButton.btText.text = "klear";			
-			endScreen.readyButton.addEventListener(MouseEvent.CLICK, checkHighScore);
 			Main.getHighScores();
 			highscoreList.y = 200;
 			highscoreList.x = 200;
@@ -191,14 +190,17 @@
 					//endScreen.winnerName.visible = true;
 					endScreen.inputLabel.visible = true;
 					endScreen.nameInput.visible = true;
-					endScreen.readyButton.visible = true;
+					//endScreen.readyButton.visible = true;
+					endScreen.readyButton.removeEventListener(MouseEvent.CLICK, restart);
+					endScreen.readyButton.addEventListener(MouseEvent.CLICK, checkHighScore);
 				}else{
 					endScreen.head.gotoAndStop(1);
 					//endScreen.winnerName.visible = true;
 					endScreen.inputLabel.visible = false;
 					endScreen.nameInput.visible = false;
-					endScreen.readyButton.visible = false;
-
+					//endScreen.readyButton.visible = false;
+					endScreen.readyButton.removeEventListener(MouseEvent.CLICK, checkHighScore);
+					endScreen.readyButton.addEventListener(MouseEvent.CLICK, restart);
 				}
 			}else{
 				endScreen.winnerName.text = "'Bauke'";
@@ -209,12 +211,16 @@
 					//endScreen.winnerName.visible = false;
 					endScreen.inputLabel.visible = true;
 					endScreen.nameInput.visible = true;
-					endScreen.readyButton.visible = true;
+					//endScreen.readyButton.visible = true;
+					endScreen.readyButton.removeEventListener(MouseEvent.CLICK, restart);
+					endScreen.readyButton.addEventListener(MouseEvent.CLICK, checkHighScore);
 
 				}else{
 					endScreen.inputLabel.visible = false;
 					endScreen.nameInput.visible = false;
-					endScreen.readyButton.visible = false;
+					//endScreen.readyButton.visible = false;
+					endScreen.readyButton.removeEventListener(MouseEvent.CLICK, checkHighScore);
+					endScreen.readyButton.addEventListener(MouseEvent.CLICK, restart);
 				}
 			}
 			
@@ -235,10 +241,14 @@
 		public function checkHighScore(e:Event):void{
 			
 			updateHighScores(GameHandler.gameHandler.winningTime, endScreen.nameInput.text + " (" + endScreen.winnerName.text +")");
+			restart();
+		}
+		public function restart(e:Event=null):void{
 			removeChild(endScreen);
 			addChild(startScreen);
 			addChild(startButton);
 			startTimer();
+			
 		}
 		public function handleKeys(event:KeyboardEvent):void
 		{
@@ -272,8 +282,11 @@
 					highscores.insertAt(0, {"name":name, "score":score});
 					break;
 				}
-				if (highscores.length > 10) highscores.removeAt(10);
 			}
+			while (highscores.length > 10){
+				highscores.removeAt(10);
+			}
+
 			saveHighScores();
 		}
 		public static function saveHighScores():void{

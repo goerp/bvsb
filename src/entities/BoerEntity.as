@@ -35,7 +35,7 @@ package entities
 		public var verticalSpeed:Number = 0;
 		public static const BOTTOM_Y:Number = 175;
 		public static const GRAVITY:Number = 1.3;
-		public static const FART_SPEED:Number = 8;
+		public static const FART_SPEED:Number = 16;
 		public var onFloor:Boolean = false;
 		
 		public var score:uint = 0;

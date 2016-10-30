@@ -53,7 +53,7 @@ package screenz
 		public static const MAX_FART_DURATION:int = 500;
 		public static const LAKE_DURATION:int = 60;
 		public static const CAT_DURATION:int = 80;
-		public static const MAX_MILK:int = 100;
+		public static const MAX_MILK:int = 110;
 		
 		public var channel:SoundChannel = new SoundChannel;
 		public var mooSound:Sound = new Resources.MOO;
@@ -253,7 +253,7 @@ package screenz
 							//this.graphics.drawRect(r2.x, r2.y, r2.width, r2.height);
 							
 							boer.effects[BoerEntity.COW_EFFECT].active = true;
-							boer.effects[BoerEntity.COW_EFFECT].duration = 30+Math.floor(Math.random()*(TrackEntity.MAX_MILK-30));
+							boer.effects[BoerEntity.COW_EFFECT].duration = 10+Math.floor(Math.random()*(TrackEntity.MAX_MILK-10));
 							boer.effects[BoerEntity.COW_EFFECT].entity = e;
 							e.setAlreadyHit(true, 1);
 							e.setAlreadyHit(true,2);
