@@ -98,7 +98,9 @@
 			
 			startButton.x = 900;// this.width / 2 - startButton.width;
 			startButton.y = 400;// this.height / 2 - startButton.height / 2;
-			startButton.addEventListener(MouseEvent.CLICK, initGame);
+			//startButton.addEventListener(MouseEvent.CLICK, initGame);
+			startButton.addEventListener(MouseEvent.CLICK, startGame);
+			
 			startScreen.addChildAt(startScreen["screens"][startScreen["currentScreen"]], 0);
 			addChild(startScreen);
 			addChild(startButton);
@@ -129,9 +131,6 @@
 			baukjeHead.x = 500;
 			baukjeHead.y= 400;
 
-			//center(baukeHead, player1Screen);
-			//center(baukjeHead, player2Screen);
-			
 			player1Screen.readyButton.addEventListener(MouseEvent.CLICK, gotoPlayer2Screen);
 			player1Screen.addChild(baukeHead);
 			bauke.head.containerClip.removeChildren();
@@ -155,8 +154,6 @@
 			removeChild(player1Screen);
 		}
 		private function startGame(e:Event):void {
-			//gameScreen.addChild(bauke);
-			//gameScreen.addChild(baukje);
 			addChild(gameScreen);
 			if(gameScreen.stage!=null){
 				addGameScreen(null);
@@ -167,7 +164,8 @@
 		}
 		public function addGameScreen(e:Event):void {
 			gameHandler.buildBackGround();
-			removeChild(player2Screen);
+			//removeChild(player2Screen);
+			removeChild(startScreen);
 		}
 		private function startTimer():void {
 			t.addEventListener(TimerEvent.TIMER, newScreen);
@@ -194,7 +192,7 @@
 					endScreen.readyButton.removeEventListener(MouseEvent.CLICK, restart);
 					endScreen.readyButton.addEventListener(MouseEvent.CLICK, checkHighScore);
 				}else{
-					endScreen.head.gotoAndStop(1);
+					
 					//endScreen.winnerName.visible = true;
 					endScreen.inputLabel.visible = false;
 					endScreen.nameInput.visible = false;
@@ -203,6 +201,7 @@
 					endScreen.readyButton.addEventListener(MouseEvent.CLICK, restart);
 				}
 			}else{
+				endScreen.head.gotoAndStop(1);
 				endScreen.winnerName.text = "'Bauke'";
 				endScreen.winningTime.text = HighscoreList.timeToString(baukeScore);
 				GameHandler.gameHandler.winningTime = baukeScore;
@@ -293,7 +292,8 @@
 			var lo:SharedObject = SharedObject.getLocal("highscores");
 			lo.data.highscores = highscores;
 			lo.flush();
-			
+			getHighScores();
+			highscoreList.build();
 		}
 
 	}

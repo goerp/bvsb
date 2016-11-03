@@ -62,6 +62,7 @@ package screenz
 		public var jumpSound:Sound = new Resources.JUMP;
 		public var hiccupSound:Sound = new Resources.HICCUP;
 		public var purrSound:Sound = new Resources.PURR;
+		public var slipSound:Sound = new Resources.SLIP;
 		
 		
 		public var sTransform:SoundTransform = new SoundTransform;
@@ -175,12 +176,17 @@ package screenz
 					//var r2:Rectangle = boer.movieClip1.getRect(this.stage);
 					if (e is MudEntity && drawn) {
 						if (boer.movieClip1.hitTestObject(mc)) {
+							if (!e.getAlreadyHit(nr)){
+								playSlip();	
+							}
 							boer.effects[BoerEntity.MUD_EFFECT].active = true;
+							e.setAlreadyHit(true,nr);
 							Boer(boer.movieClip1).effectClip.gotoAndPlay("slip");
 							Boer(boer.movieClip2).effectClip.gotoAndPlay("slip");
 						}else {
 							boer.effects[BoerEntity.MUD_EFFECT].active = false;
-							Boer(boer.movieClip1).effectClip.gotoAndStop(0);
+							//channel.stop();
+							Boer(boer.movieClip1).effectClip.gotoAndStop(1);
 						}
 					}else if (drawn && e is BerenburgEntity && !e.getAlreadyHit(nr)) {
 						if (boer.movieClip1.hitTestObject(mc.hitbox)) {
@@ -212,7 +218,9 @@ package screenz
 							//this.graphics.lineStyle(2, 0xFF0000);
 							//this.graphics.drawRect(r1.x, r1.y, r1.width, r1.height);
 							//this.graphics.drawRect(r2.x, r2.y, r2.width, r2.height);
-
+							if (!boer.effects[BoerEntity.CAT_EFFECT].active){
+								playPurr();								
+							}
 							boer.effects[BoerEntity.CAT_EFFECT].active = true;
 							boer.effects[BoerEntity.CAT_EFFECT].entity= e;
 							boer.effects[BoerEntity.CAT_EFFECT].duration = CAT_DURATION;
@@ -220,8 +228,6 @@ package screenz
 							boer.movieClip1.gotoAndPlay("pet");
 							e.getMC(1).gotoAndStop("purr");
 							e.getMC(2).gotoAndStop("purr");
-							
-							playPurr();
 							
 							//only petted once
 							e.setAlreadyHit(true, 1);
@@ -308,6 +314,11 @@ package screenz
 			}
 			
 		}
+		public function playSlip():void{
+			channel = slipSound.play();
+			setSoundTransform();
+		}
+
 		public function playFart():void{
 			channel = fartSound.play();
 			setSoundTransform();

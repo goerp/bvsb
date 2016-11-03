@@ -24,6 +24,8 @@ package
 		[Embed(source="../lib/sounds/cat-purr.mp3")]
 		public static const PURR:Class;
 		
+		[Embed(source="../lib/sounds/slip.mp3")]
+		public static const SLIP:Class;
 		
 		public function Resources() 
 		{

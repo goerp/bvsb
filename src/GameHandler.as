@@ -45,7 +45,9 @@ package
 		private var minutes:uint;
 		private var seconds:String;
 		private var hundreds:String;
-		public var winningTime:int=-1;
+		public var winningTime:int =-1;
+		private var left_press_area:Sprite = new Sprite;
+		private var right_press_area:Sprite = new Sprite;
 		
 		public static var gameHandler:GameHandler;
 		
@@ -92,10 +94,41 @@ package
 			gameScreen.trackTop.addChild(topTrack);
 			gameScreen.trackBottom.addChild(bottomTrack);
 
+			left_press_area.graphics.beginFill(0xAAAAAA);
+			left_press_area.graphics.drawRect(0, 0, 100, 1200);
+			left_press_area.graphics.endFill();
+			
+			var b:Head = new Head;
+			b.width = 80;
+			b.x = 50;
+			b.y = 600 - b.height / 2;
+			left_press_area.addChild(b);
+
+			right_press_area.graphics.beginFill(0xAAAAAA);
+			right_press_area.graphics.drawRect(0, 0, 100, 1200);
+			right_press_area.graphics.endFill();
+
+			b = new Head;
+			b.gotoAndStop(2);
+			b.width = 80;
+			b.x = 50;
+			b.y = 600 - b.height / 2;
+			right_press_area.addChild(b);
+
+			left_press_area.x =-100;
+			right_press_area.x = 1200;
+			
+			gameScreen.addChild(left_press_area);
+			gameScreen.addChild(right_press_area);
+			
 			topTrack.build(bottomTrack, boer1, boer2, track);
 			bottomTrack.build(topTrack,boer2,boer1, track);
 			
 			gameScreen.addEventListener(Event.ENTER_FRAME, update);
+
+			gameScreen.scaleX = 12 / 14;
+			gameScreen.x = 85;
+
 			
 			gameScreen.stage.addEventListener(KeyboardEvent.KEY_UP, handleKeyPress);
 			gameScreen.stage.addEventListener(TouchEvent.TOUCH_BEGIN, handleTouchBegin);
@@ -107,10 +140,10 @@ package
 			gameScreen.removeEventListener(Event.ENTER_FRAME, update);
 		}
 		public function handleTouchBegin(te:TouchEvent):void{
-			if (te.stageX < 300){
+			if (te.stageX < 100){
 				topPress(te);
 			}
-			if (te.stageX >900){
+			if (te.stageX >1100){
 				bottomPress(te);
 			}
 		}

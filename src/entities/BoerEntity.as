@@ -22,6 +22,7 @@ package entities
 		public static const ONION_EFFECT:int = 8;
 		public static const WINNER_EFFECT:int = 9;
 		public static const LOSER_EFFECT:int = 10;
+		public static const FART_EFFECT:int = 11;
 		
 		public static const MUD_SPEED:Number = 1;
 		public static const MILK_SPEED:int = 5;
@@ -35,7 +36,7 @@ package entities
 		public var verticalSpeed:Number = 0;
 		public static const BOTTOM_Y:Number = 175;
 		public static const GRAVITY:Number = 1.3;
-		public static const FART_SPEED:Number = 16;
+		public static const FART_SPEED:Number = 6;
 		public var onFloor:Boolean = false;
 		
 		public var score:uint = 0;
@@ -48,7 +49,7 @@ package entities
 			this.nr = nr;
 			Boer(movieClip1).head.gotoAndStop(nr);
 			Boer(movieClip2).head.gotoAndStop(nr);
-			for (var e:int = 0; e < 11; e++) {
+			for (var e:int = 0; e < 12; e++) {
 				effects.push(new Effect);	
 			}
 			
@@ -111,7 +112,7 @@ package entities
 			trackEntity.cloudLayer.x += dx;// TrackEntity.CLOUD_LAYER_SPEED * ((relPos * 1200) - (movieClip1.x)) / 10
 
 			if(effects[MUD_EFFECT].active){
-				speed = Math.min(speed, MUD_SPEED);
+				speed = MUD_SPEED//Math.min(speed, MUD_SPEED);
 			}
 			if (effects[BERENBURG_EFFECT].active){
 				effects[BERENBURG_EFFECT].duration--;
@@ -130,11 +131,19 @@ package entities
 					effects[BERENBURG_EFFECT].active = false;
 				}
 			}
-			if (effects[ONION_EFFECT].active){
+			if (effects[FART_EFFECT].active){
+				effects[FART_EFFECT].duration--;
+				if (effects[FART_EFFECT].duration == 0) effects[FART_EFFECT].active = false;
+				speed = speed + FART_SPEED;
+			}
+
+			if (effects[ONION_EFFECT].active && !effects[FART_EFFECT].active){
 				effects[ONION_EFFECT].duration--;
 				if (Math.random() > 0.98) {
+					effects[FART_EFFECT].active = true;
 					trackEntity.playFart();
-					speed = speed + FART_SPEED;
+					//speed = speed + FART_SPEED;
+					effects[FART_EFFECT].duration = 10;
 					effects[ONION_EFFECT].count--;
 					Boer(movieClip1).effectClip.gotoAndPlay("fart");
 					if (effects[ONION_EFFECT].count == 0) {
