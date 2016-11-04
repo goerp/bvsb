@@ -39,7 +39,7 @@
 		public var player2Screen:Player2Screen = new Player2Screen;
 		public var gameScreen:GameScreen= new GameScreen;
 		
-		private var t:Timer = new Timer(4000, 0);
+		private var t:Timer = new Timer(7000, 0);
 		public var bauke:Boer = new Boer;
 		public var baukje:Boer = new Boer;
 		public var baukeHead:Head= new Head;
@@ -49,6 +49,11 @@
 		public static var highscores:Array;
 		public static var highscoreList:HighscoreList = new HighscoreList;
 		public var photoMaker:Photomaker = new Photomaker;
+		
+		public var uitleg1:Uitleg1 = new Uitleg1;
+		public var uitleg2:Uitleg2 = new Uitleg2;
+		public var uitleg3:Uitleg3 = new Uitleg3;
+		public var uitleg4:Uitleg4 = new Uitleg4;
 		
 		public function Main() 
 		{
@@ -89,7 +94,7 @@
 			highscoreList.x = 200;
 			highscoreList.build();
 			highscoreScreen.addChild(highscoreList);
-			startScreen["screens"] = [screen1, highscoreScreen, creditScreen];
+			startScreen["screens"] = [screen1, highscoreScreen, creditScreen, uitleg1, uitleg2, uitleg3, uitleg4];
 			startScreen["currentScreen"] = 0;
 			for (var i:int = 0; i < startScreen["screens"].length; i++) {
 				startScreen["screens"].x = this.width / 2 - startScreen["screens"].width / 2;
